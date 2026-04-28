@@ -1,5 +1,4 @@
 const path = require('path');
-const cssnano = require('cssnano');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { version, description } = require('./package.json');
@@ -24,70 +23,25 @@ module.exports = {
 
   devtool: false,
 
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          { loader: 'style-loader' },
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: isProd ? 2 : 1,
-            },
-          },
-          isProd && {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [
-                cssnano({
-                  preset: 'default',
-                }),
-              ],
-            },
-          },
-          { loader: 'sass-loader' },
-        ].filter(Boolean),
-      },
-    ],
-  },
-
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: '@(manifest).json',
-        transform: content => {
-          const manifest = JSON.parse(content);
-
-          return JSON.stringify(
-            {
-              ...manifest,
-              version,
-              description,
-            },
-            null,
-            2,
-          );
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '@(manifest).json',
+          transform: content => {
+            const manifest = JSON.parse(content.toString());
+            return JSON.stringify({ ...manifest, version, description }, null, 2);
+          },
         },
-      },
-      {
-        from: 'icons/*',
-      },
-      {
-        from: 'options/@(options).html',
-      },
-    ]),
+        { from: 'icons/*' },
+        { from: 'options/@(options).html' },
+        { from: 'options/badge.css' },
+        {
+          from: path.resolve(__dirname, 'node_modules/bulma/css/bulma.min.css'),
+          to: path.resolve(__dirname, 'dist/options/bulma.min.css'),
+        },
+      ],
+    }),
   ],
 
   stats: isProd ? 'normal' : 'errors-only',

@@ -17,23 +17,14 @@ const FormControl = ({ type, id, name, value, options, onChange }) => {
   };
 
   if (type === 'select') {
-    return (
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select
-            id={id}
-            name={name || id}
-            value={value}
-            onchange={handleChange}
-          >
-            {options.map(opt => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+    return h('div', { class: 'control' },
+      h('div', { class: 'select is-fullwidth' },
+        h('select', { id, name: name || id, value, onchange: handleChange },
+          options.map(opt =>
+            h('option', { key: opt.value, value: opt.value }, opt.label),
+          ),
+        ),
+      ),
     );
   }
 
@@ -48,18 +39,16 @@ const FormControl = ({ type, id, name, value, options, onChange }) => {
     }
   };
 
-  return (
-    <div class="control">
-      <input
-        type={type}
-        id={id}
-        class="input"
-        name={name || id}
-        value={value}
-        oninput={handleInput}
-        onblur={handleBlur}
-      />
-    </div>
+  return h('div', { class: 'control' },
+    h('input', {
+      type,
+      id,
+      class: 'input',
+      name: name || id,
+      value,
+      oninput: handleInput,
+      onblur: handleBlur,
+    }),
   );
 };
 

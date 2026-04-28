@@ -7,6 +7,8 @@ import getBadgeCanvas from '../utils/getBadgeCanvas';
 
 const LINK_ELEM_ID = 'scs-tab-badge-favicon';
 const CANVAS_SIZE = 16;
+const PIXEL_RATIO = window.devicePixelRatio || 1;
+const PHYSICAL_SIZE = Math.round(CANVAS_SIZE * PIXEL_RATIO);
 
 const getLinkElem = () => {
   const selfLinkElem = document.getElementById(LINK_ELEM_ID);
@@ -16,7 +18,7 @@ const getLinkElem = () => {
   linkElem.id = LINK_ELEM_ID;
   linkElem.rel = 'icon';
   linkElem.type = 'image/png';
-  linkElem.sizes = '16x16';
+  linkElem.sizes = `${PHYSICAL_SIZE}x${PHYSICAL_SIZE}`;
 
   return linkElem;
 };
@@ -62,16 +64,21 @@ const getBadgeFavIconUrl = ({ favIconUrl, badgeNum, options }) => {
   return getFavIconImg(favIconUrl).then(img => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = CANVAS_SIZE;
-    canvas.height = CANVAS_SIZE;
+    canvas.width = PHYSICAL_SIZE;
+    canvas.height = PHYSICAL_SIZE;
+    ctx.scale(PIXEL_RATIO, PIXEL_RATIO);
 
     if (img) ctx.drawImage(img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    const badgeCanvas = getBadgeCanvas(badgeNum, options);
+    const badgeCanvas = getBadgeCanvas(badgeNum, options, PIXEL_RATIO);
+    const badgeLogicalWidth = badgeCanvas.width / PIXEL_RATIO;
+    const badgeLogicalHeight = badgeCanvas.height / PIXEL_RATIO;
     ctx.drawImage(
       badgeCanvas,
-      CANVAS_SIZE - badgeCanvas.width,
-      CANVAS_SIZE - badgeCanvas.height,
+      CANVAS_SIZE - badgeLogicalWidth,
+      CANVAS_SIZE - badgeLogicalHeight,
+      badgeLogicalWidth,
+      badgeLogicalHeight,
     );
 
     return canvas.toDataURL();

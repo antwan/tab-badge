@@ -123,7 +123,7 @@ const drawBadge = (ctx, badgeNum, { style }, sizes) => {
   }
 };
 
-export default (badgeNum, options) => {
+export default (badgeNum, options, pixelRatio = 1) => {
   const { fontSize } = options;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -131,9 +131,10 @@ export default (badgeNum, options) => {
   ctx.font = `bold ${fontSize}px sans-serif`;
 
   const { width, height } = getBadgeSize(ctx, badgeNum, options);
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = Math.round(width * pixelRatio);
+  canvas.height = Math.round(height * pixelRatio);
 
+  ctx.scale(pixelRatio, pixelRatio);
   ctx.font = `bold ${fontSize}px sans-serif`;
   ctx.textAlign = 'center';
 
