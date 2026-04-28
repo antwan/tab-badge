@@ -50,11 +50,13 @@ module.exports = {
           isProd && {
             loader: 'postcss-loader',
             options: {
-              plugins: [
-                cssnano({
-                  preset: 'default',
-                }),
-              ],
+              postcssOptions: {
+                plugins: [
+                  cssnano({
+                    preset: 'default',
+                  }),
+                ],
+              },
             },
           },
           { loader: 'sass-loader' },
@@ -64,30 +66,32 @@ module.exports = {
   },
 
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: '@(manifest).json',
-        transform: content => {
-          const manifest = JSON.parse(content);
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '@(manifest).json',
+          transform: content => {
+            const manifest = JSON.parse(content.toString());
 
-          return JSON.stringify(
-            {
-              ...manifest,
-              version,
-              description,
-            },
-            null,
-            2,
-          );
+            return JSON.stringify(
+              {
+                ...manifest,
+                version,
+                description,
+              },
+              null,
+              2,
+            );
+          },
         },
-      },
-      {
-        from: 'icons/*',
-      },
-      {
-        from: 'options/@(options).html',
-      },
-    ]),
+        {
+          from: 'icons/*',
+        },
+        {
+          from: 'options/@(options).html',
+        },
+      ],
+    }),
   ],
 
   stats: isProd ? 'normal' : 'errors-only',
