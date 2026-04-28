@@ -1,7 +1,5 @@
 import { h, app } from 'hyperapp';
 
-import './options.scss';
-
 import OPTIONS from '../constants/options';
 
 import actions from './actions';
@@ -18,7 +16,7 @@ const run = options => {
     },
   };
 
-  const view = () => <App />;
+  const view = () => h(App, null);
 
   app(state, actions, view, document.getElementById('main'));
 };
